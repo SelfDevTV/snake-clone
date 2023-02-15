@@ -1,4 +1,4 @@
-import { Application, Sprite, Ticker } from "pixi.js";
+import { Application, Ticker } from "pixi.js";
 import { Direction } from "./Direction";
 import { GameManager } from "./GameManager";
 import { Keyboard } from "./Keyboard";
