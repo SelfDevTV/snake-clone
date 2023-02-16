@@ -1,4 +1,4 @@
-import { Application, Sprite, Text } from "pixi.js";
+import { Application, Text } from "pixi.js";
 import { Direction } from "./Direction";
 import { Snake } from "./Snake";
 import { Tile } from "./Tile";
