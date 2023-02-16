@@ -1,11 +1,13 @@
 import { Application, Sprite, Text } from "pixi.js";
 import { Direction } from "./Direction";
 import { Snake } from "./Snake";
+import { Tile } from "./Tile";
 
 export class GameManager {
   score: number = 0;
   fruitImg: string;
-  fruit?: Sprite;
+  fruitImgs: string[] = ["germany.png", "italy.png"];
+  fruit?: Tile;
   app: Application;
   snake: Snake;
   gameOver: boolean = false;
@@ -15,30 +17,35 @@ export class GameManager {
     this.fruitImg = fruitImg;
     this.app = app;
     this.snake = snake;
-    this.init();
-    this.gameText = new Text(this.score, {
+
+    this.gameText = new Text("Score: " + this.score, {
       fontFamily: "Arial",
-      fontSize: 24,
+      fontSize: 40,
       fill: 0xff1010,
+
       align: "center",
     });
+    this.gameText.x = 15;
+    this.gameText.y = 15;
     this.app.stage.addChild(this.gameText);
+    this.init();
   }
 
   init = () => {
-    this.spawnFruit();
+    this.app.stage.addChild(this.gameText);
   };
 
   renderText = () => {
     if (this.gameOver) {
-      this.gameText.text = "Game Over";
+      this.gameText.text = "Game Over. Score: " + this.score;
       return;
     }
-    this.gameText.text = this.score;
+    this.gameText.text = "Score: " + this.score;
   };
 
   spawnFruit = () => {
-    const fruit = Sprite.from(this.fruitImg);
+    const randomIndex = Math.round(Math.random() * (this.fruitImgs.length - 1));
+    const fruit = Tile.from(this.fruitImgs[randomIndex]) as Tile;
     fruit.width = 50;
     fruit.height = 50;
 
@@ -53,18 +60,33 @@ export class GameManager {
     if (this.snake.checkCollision(fruit)) {
       console.log("positive");
       this.spawnFruit();
+      return;
     }
 
-    this.app.stage.removeChild(this.fruit!);
     this.fruit = fruit;
-    this.app.stage.addChild(fruit);
+    this.app.stage.addChild(this.fruit);
+  };
+
+  resetGame = () => {
+    this.gameOver = false;
+    this.score = 0;
+    this.snake.reset();
+    this.app.stage.removeChild(this.fruit!);
+    this.spawnFruit();
+    this.init();
   };
 
   update = () => {
     // move snake
-
+    this.renderText();
     if (this.gameOver) {
-      this.renderText();
+      const btn = document.querySelector<HTMLElement>(".btn-1");
+      btn!.style.opacity = "1";
+      btn?.addEventListener("click", () => {
+        this.resetGame();
+        btn!.style.opacity = "0";
+      });
+
       return;
     }
     this.snake.draw();
@@ -76,10 +98,10 @@ export class GameManager {
 
     if (fruitColl) {
       console.log("collision");
-      this.snake.eatFruit();
+      this.snake.eatFruit(this.fruit!);
       this.spawnFruit();
       this.score++;
-      this.renderText();
+
       return;
     }
 

@@ -26,10 +26,6 @@ const snake = new Snake(wormHead, app);
 const game = new GameManager("germany.png", app, snake);
 game.spawnFruit();
 
-snake.eatFruit();
-snake.eatFruit();
-snake.eatFruit();
-
 Keyboard.init();
 console.log(Keyboard.state);
 

@@ -9,13 +9,21 @@ export class Snake {
   moveSpeed: number = 50;
 
   direction: Direction = Direction.right;
+  head: Tile;
 
   constructor(head: Tile, app: Application) {
+    this.head = head;
     this.tiles.push(head);
 
     this.tiles.forEach((tile) => app.stage.addChild(tile));
     this.app = app;
   }
+
+  reset = () => {
+    this.app.stage.removeChildren();
+    this.tiles = [this.head];
+    this.app.stage.addChild(this.head);
+  };
 
   setDirection = () => {
     const head = this.tiles.at(0);
@@ -85,39 +93,42 @@ export class Snake {
     return unique.length !== this.tiles.length;
   };
 
-  eatFruit = () => {
-    const newTile = Tile.from("italy.png") as Tile;
-    newTile.width = 50;
-    newTile.height = 50;
+  eatFruit = (fruitSprite: Tile) => {
     const lastTile = this.tiles.at(-1);
     if (lastTile?.direction === Direction.right) {
-      newTile.x = lastTile!.x - 50;
-      newTile.y = lastTile!.y;
+      fruitSprite.x = lastTile!.x - 50;
+      fruitSprite.y = lastTile!.y;
     } else if (lastTile?.direction === Direction.left) {
-      newTile.x = lastTile!.x + 50;
-      newTile.y = lastTile!.y;
+      fruitSprite.x = lastTile!.x + 50;
+      fruitSprite.y = lastTile!.y;
     } else if (lastTile?.direction === Direction.up) {
-      newTile.x = lastTile!.x;
-      newTile.y = lastTile!.y + 50;
+      fruitSprite.x = lastTile!.x;
+      fruitSprite.y = lastTile!.y + 50;
     } else {
-      newTile.x = lastTile!.x;
-      newTile.y = lastTile!.y - 50;
+      fruitSprite.x = lastTile!.x;
+      fruitSprite.y = lastTile!.y - 50;
     }
 
-    newTile.direction = lastTile!.direction;
-    this.tiles.push(newTile);
-    this.app.stage.addChild(newTile);
+    fruitSprite.direction = lastTile!.direction;
+
+    this.tiles.push(fruitSprite);
+    this.app.stage.addChild(fruitSprite);
+
+    console.log(this.app.stage.children);
   };
 
   draw = () => {
     this.setDirection();
 
     this.tiles.forEach((tile) => {
-      if (tile.x + tile.direction.x * this.moveSpeed > this.app.screen.width) {
+      if (
+        tile.x + tile.direction.x * this.moveSpeed >
+        this.app.screen.width - tile.width
+      ) {
         tile.x = 0;
       } else if (
         tile.y + tile.direction.y * this.moveSpeed >
-        this.app.screen.height
+        this.app.screen.height - tile.width
       ) {
         tile.y = 0;
       } else if (tile.x + tile.direction.x * this.moveSpeed < 0) {
