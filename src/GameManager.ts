@@ -50,6 +50,11 @@ export class GameManager {
     fruit.x = randomPositionX * 50;
     fruit.y = randomPositionY * 50;
 
+    if (this.snake.checkCollision(fruit)) {
+      console.log("positive");
+      this.spawnFruit();
+    }
+
     this.app.stage.removeChild(this.fruit!);
     this.fruit = fruit;
     this.app.stage.addChild(fruit);
